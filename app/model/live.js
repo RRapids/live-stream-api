@@ -2,7 +2,6 @@
 module.exports = app => {
   const { STRING, INTEGER, DATE, ENUM, TEXT } = app.Sequelize;
 
-
   const Live = app.model.define('live', {
     id: {
       type: INTEGER(20),
