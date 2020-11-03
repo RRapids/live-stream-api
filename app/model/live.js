@@ -10,7 +10,7 @@ module.exports = app => {
     },
     title: {
       type: STRING(100),
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       comment: '直播间标题',
     },
@@ -22,7 +22,7 @@ module.exports = app => {
     },
     user_id: {
       type: INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       comment: '用户id',
       references: {
@@ -34,25 +34,25 @@ module.exports = app => {
     },
     look_count: {
       type: INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       comment: '总观看人数',
     },
     coin: {
       type: INTEGER,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       comment: '总金币',
     },
     key: {
       type: STRING,
-      allowNull: false,
+      allowNull: true,
       defaultValue: '',
       comment: '唯一标识',
     },
     status: {
       type: INTEGER(1),
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0,
       comment: '直播间状态 0未开播 1直播中 2暂停直播 3直播结束',
     },
