@@ -35,5 +35,7 @@ module.exports = app => {
   // io.of('/').route('test', io.controller.nsp.test);
   // 进入直播间
   io.of('/').route('joinLive', io.controller.live.joinLive);
+  // 离开直播间
+  io.of('/').route('leaveLive', io.controller.nsp.leaveLive);
 
 };
