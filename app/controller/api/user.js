@@ -39,13 +39,13 @@ class UserController extends Controller {
     }
     // 如果查不到，直接注册写入新数据
     if (!user) {
-      // user = await app.model.User.create({
-      //   phone: phone,
-      //   password: '123123',
-      //   avatar: '',
-      //   coin: 0,
-      // })
-      ctx.throw(400, '该用户不存在');
+      user = await app.model.User.create({
+        phone,
+        password: '123123',
+        avatar: '',
+        coin: 0,
+      });
+      // ctx.throw(400, '该用户不存在');
     }
     user = JSON.parse(JSON.stringify(user));
     console.log(user);

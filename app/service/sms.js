@@ -5,16 +5,18 @@ const await = require('await-stream-ready/lib/await');
 
 
 const config = {
-  AccessKeyId: 'LTAI4FtrkgLGQMHgn3A8RFXz', // 阿里云key
-  AccessKeySecret: 'iCjvJR1EyIuHUTXmeUMnfxfc5F6aXp', // 阿里云密钥
+  AccessKeyId: 'LTAI4LpNXLeoyFvu', // 阿里云key
+  AccessKeySecret: 'cNGVSkiEkHqEO0EaX7tIpFgG4qfWNg', // 阿里云密钥
 };
 
 
 // 签名模板，注意修改
 const sign = {
   REG_CODE: {
-    SignName: 'QWER',
-    TemplateCode: 'SMS_138164808',
+    // SignName: '后台管理系统',
+    // TemplateCode: 'SMS_183765274',
+    SignName: '后台管理系统',
+    TemplateCode: 'SMS_183765274',
   },
 };
 

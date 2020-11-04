@@ -119,6 +119,23 @@ module.exports = appInfo => {
     },
   };
 
+  config.io = {
+    init: {
+      wsEngine: 'ws',
+    },
+    namespace: {
+      '/': {
+        connectionMiddleware: [],
+        packetMiddleware: [],
+      },
+    },
+    redis: {
+      host: '127.0.0.1',
+      port: 6379,
+      db: 0,
+    },
+  };
+
   const nms = new NodeMediaServer(config.mediaServer);
   nms.run();
 
