@@ -10,7 +10,8 @@ module.exports = app => {
     io,
   } = app;
   // socket路由配置测试
-  io.of('/').route('test', io.controller.nsp.test);
+  // io.of('/').route('test', io.controller.nsp.test);
+
   router.get('/', controller.home.index);
   router.get('/list', controller.home.list);
   // 用户注册
@@ -31,11 +32,9 @@ module.exports = app => {
   router.post('/api/phoneLogin', controller.api.user.phoneLogin);
   // 发送手机验证码
   router.post('/api/sendcode', controller.api.sms.sendCode);
-  // sorket路由配置测试
-  // io.of('/').route('test', io.controller.nsp.test);
   // 进入直播间
   io.of('/').route('joinLive', io.controller.live.joinLive);
   // 离开直播间
-  io.of('/').route('leaveLive', io.controller.nsp.leaveLive);
+  io.of('/').route('leaveLive', io.controller.live.leaveLive);
 
 };

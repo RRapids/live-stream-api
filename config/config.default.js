@@ -118,7 +118,7 @@ module.exports = appInfo => {
       secret: 'nodemedia2017privatekey',
     },
   };
-
+  // socket.io安装和通讯
   config.io = {
     init: {
       wsEngine: 'ws',

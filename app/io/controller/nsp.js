@@ -1,11 +1,15 @@
+/* eslint-disable no-unused-vars */
 'use strict';
+
+const await = require('await-stream-ready/lib/await');
 
 const Controller = require('egg').Controller;
 
 class NspController extends Controller {
+
+
   async test() {
     const { ctx, app } = this;
-
     // 前端传过来的参数
     const message = ctx.args[0];
     console.log(message);
