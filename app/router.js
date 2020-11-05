@@ -36,5 +36,8 @@ module.exports = app => {
   io.of('/').route('joinLive', io.controller.live.joinLive);
   // 离开直播间
   io.of('/').route('leaveLive', io.controller.live.leaveLive);
+  // 实时弹幕
+  io.of('/').route('comment', io.controller.live.comment);
+
 
 };
