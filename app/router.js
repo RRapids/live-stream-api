@@ -38,6 +38,10 @@ module.exports = app => {
   io.of('/').route('leaveLive', io.controller.live.leaveLive);
   // 实时弹幕
   io.of('/').route('comment', io.controller.live.comment);
+  // 发送礼物
+  io.of('/').route('gift', io.controller.live.gift);
+  // 发送礼物
+  router.get('/api/gift/list', controller.api.gift.list);
 
 
 };
