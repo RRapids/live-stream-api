@@ -53,4 +53,7 @@ module.exports = app => {
   // 管理员列表
   router.get('/admin/manager', controller.admin.manager.index);
 
+  // 删除管理员
+  router.get('/admin/manager/delete/:id', controller.admin.manager.delete);
+
 };

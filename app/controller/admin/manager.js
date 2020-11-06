@@ -4,6 +4,19 @@ const Controller = require('egg').Controller;
 
 class ManagerController extends Controller {
 
+  // 删除管理员
+  async delete() {
+    const { ctx, app } = this;
+    const id = ctx.params.id;
+    await app.model.Manager.destroy({
+      where: {
+        id,
+      },
+    });
+    ctx.toast('删除成功', 'success');
+    ctx.redirect('/admin/manager');
+  }
+
   // 管理员列表
   async index() {
     const { ctx, app } = this;
