@@ -263,7 +263,7 @@ class NspController extends Controller {
     }
     const room = 'live_' + live_id;
 
-    // 验证礼物是否存在
+    // 验证礼物是否存在 
     let gift = await app.model.Gift.findOne({
       where: {
         id: gift_id,

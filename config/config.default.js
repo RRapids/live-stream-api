@@ -136,6 +136,12 @@ module.exports = appInfo => {
     },
   };
 
+  config.view = {
+    mapping: {
+      '.html': 'nunjucks',
+    },
+  };
+
   const nms = new NodeMediaServer(config.mediaServer);
   nms.run();
 

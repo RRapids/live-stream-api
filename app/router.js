@@ -44,4 +44,6 @@ module.exports = app => {
   router.get('/api/gift/list', controller.api.gift.list);
 
 
+  router.get('/test', controller.admin.test.page);
+
 };
