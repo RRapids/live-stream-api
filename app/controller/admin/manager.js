@@ -3,6 +3,16 @@
 const Controller = require('egg').Controller;
 
 class ManagerController extends Controller {
+
+  // 管理员列表
+  async index() {
+    const { ctx, app } = this;
+    const data = await ctx.page('Manager');
+    await ctx.render('admin/manager/index.html', {
+      data,
+    });
+  }
+
   // 创建管理员表单
   async create() {
     const { ctx } = this;
