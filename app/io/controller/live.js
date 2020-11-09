@@ -6,7 +6,7 @@ const await = require('await-stream-ready/lib/await');
 
 const Controller = require('egg').Controller;
 
-class NspController extends Controller {
+class LiveController extends Controller {
   // 验证用户token
   async checkToken(token) {
     const { ctx, app, service, helper } = this;
@@ -51,45 +51,6 @@ class NspController extends Controller {
     }
 
     return user;
-  }
-  async comment() {
-    const { ctx, app, service, helper } = this;
-    const nsp = app.io.of('/'); // 接受参数
-    const message = ctx.args[0] || {}; // 获得当前连接
-
-    const socket = ctx.socket;
-    const id = socket.id;
-
-    let { live_id, token, data } = message;
-    if (!data) {
-      socket.emit(id, ctx.helper.parseMsg('error', '评论内容不能为空'));
-      return;
-    } // 验证用户token
-    let user = await this.checkToken(token);
-    if (!user) {
-      return;
-    } // 验证当前直播间是否存在或是否处于直播中
-    let msg = await service.live.checkStatus(live_id);
-    if (msg) {
-      socket.emit(id, ctx.helper.parseMsg('error', msg));
-      return;
-    }
-
-    const room = 'live_' + live_id; // 推送消息到直播间
-    nsp.to(room).emit('comment', {
-      user: {
-        id: user.id,
-        name: user.nickname || user.username,
-        avatar: user.avatar,
-      },
-      id: ctx.randomString(10),
-      content: data,
-    }); // 生成一条comment数据
-    app.model.Comment.create({
-      content: data,
-      live_id,
-      user_id: user.id,
-    });
   }
   // 离开直播间方法
   async leaveLive() {
@@ -165,7 +126,7 @@ class NspController extends Controller {
       return;
     }
 
-    // 验证当前直播间是否存在或是出于直播中
+    // 验证当前直播间是否存在或是处于直播中
     let msg = await service.live.checkStatus(live_id);
 
     if (msg) {
@@ -173,10 +134,7 @@ class NspController extends Controller {
       return;
     }
 
-
     const room = 'live_' + live_id;
-
-
     // 用户加入房间
     socket.join(room);
 
@@ -205,9 +163,7 @@ class NspController extends Controller {
         },
         data: list,
       });
-
     });
-
 
     // 加入播放历史记录
     let liveUser = await app.model.LiveUser.findOne({
@@ -230,26 +186,23 @@ class NspController extends Controller {
         });
       }
     }
-    // let list = await service.get('userList_' + room)
-    // if (list) {
-    //   list = list.filter((item) => item.id !== user.id)
-    //   service.cache.set('userList_' + room, list)
-    // }
-    // console.log(list)
   }
-
-  // 直播间送礼物
-  async gift() {
+  // 直播间发送弹幕
+  async comment() {
     const { ctx, app, service, helper } = this;
     const nsp = app.io.of('/');
     // 接受参数
     const message = ctx.args[0] || {};
-    // 当前连接
+
+    // 获得当前连接
     const socket = ctx.socket;
     const id = socket.id;
 
-    let { live_id, token, gift_id } = message;
-
+    let { live_id, token, data } = message;
+    if (!data) {
+      socket.emit(id, ctx.helper.parseMsg('error', '评论内容不能为空'));
+      return;
+    }
     // 验证用户token
     let user = await this.checkToken(token);
     if (!user) {
@@ -261,9 +214,52 @@ class NspController extends Controller {
       socket.emit(id, ctx.helper.parseMsg('error', msg));
       return;
     }
-    const room = 'live_' + live_id;
 
-    // 验证礼物是否存在 
+    const room = 'live_' + live_id;
+    // 推送消息到直播间
+    nsp.to(room).emit('comment', {
+      user: {
+        id: user.id,
+        name: user.nickname || user.username,
+        avatar: user.avatar,
+      },
+      id: ctx.randomString(10),
+      content: data,
+    });
+    // 生成一条comment数据
+    app.model.Comment.create({
+      content: data,
+      live_id,
+      user_id: user.id,
+    });
+  }
+  // 直播间送礼物
+  async gift() {
+    const { ctx, app, service, helper } = this;
+    const nsp = app.io.of('/');
+    // 接收参数
+    const message = ctx.args[0] || {};
+
+    // 获得当前连接
+    const socket = ctx.socket;
+    const id = socket.id;
+
+    let { live_id, token, gift_id } = message;
+
+    // 验证用户token
+    let user = await this.checkToken(token);
+    if (!user) {
+      return;
+    }
+    // 验证当前直播间是否存在或者是否处于直播中
+    let msg = await service.live.checkStatus(live_id);
+    if (msg) {
+      socket.emit(id, ctx.helper.parseMsg('error', msg));
+      return;
+    }
+    // 直播间房间的id
+    const room = 'live_' + live_id;
+    // 验证礼物是否存在
     let gift = await app.model.Gift.findOne({
       where: {
         id: gift_id,
@@ -271,16 +267,16 @@ class NspController extends Controller {
     });
 
     if (!gift) {
+      // 如果没有改礼物，那么就通过socket向前端通信 改礼物不存在
       socket.emit(id, ctx.helper.parseMsg('error', '该礼物不存在'));
       return;
     }
 
     // 当前用户金币是否不足
     if (user.coin < gift.coin) {
-      socket.emit(id, ctx.header.parseMsg('error', '金币不足，请先充值'));
+      socket.emit(id, ctx.helper.parseMsg('error', '金币不足，请先充足'));
       return;
     }
-
     // 扣除金币
     user.coin -= gift.coin;
     await user.save();
@@ -291,7 +287,8 @@ class NspController extends Controller {
       user_id: user.id,
       gift_id,
     });
-    // 直播间总金币数+1
+
+    // 直播间金币总数+1
     let live = await app.model.Live.findOne({
       where: {
         id: live_id,
@@ -310,7 +307,6 @@ class NspController extends Controller {
       num: 1,
     });
   }
-
 }
 
-module.exports = NspController;
+module.exports = LiveController;
